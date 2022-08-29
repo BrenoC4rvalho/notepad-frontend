@@ -1,14 +1,9 @@
 import axios from "axios";
 
-
-const TOKEN = `Bearer `
-
 const instance = axios.create({
     baseURL: 'http://localhost:4000'
 })
 
-instance.defaults.headers.get['Authorization'] = TOKEN
-instance.defaults.headers.delete['Authorization'] = TOKEN
 
 
 const userApi = {
@@ -27,12 +22,20 @@ const userApi = {
         return response.data;
     },
 
-    getUnique: async (id: string) => {
+    recoverUserInformation: async (token: string) => {
+        instance.defaults.headers.get['Authorization'] = `Bearer ${token}`
+        let response = await instance.get('/getuser');
+        return response.data;
+    },
+
+    getUnique: async (id: string, token: string) => {
+        instance.defaults.headers.get['Authorization'] = `Bearer ${token}`
         let response = await instance.get(`/${id}`);
         return response.data;
     },
 
-    destroy: async (id: string) => {
+    destroy: async (id: string, token: string) => {
+        instance.defaults.headers.delete['Authorization'] = `Bearer ${token}`
         let response = await instance.delete(`/${id}`);
         return response.data;
     }

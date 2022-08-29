@@ -1,14 +1,16 @@
-import userApi from "../../libs/userApi";
 
 import Form from "../../components/Form";
+import { useContext } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
 
 
 const Signin = () => {
-    
+    const { signIn } = useContext(AuthContext)
+
     const login = async (nickname: string, password: string) => {
-        const token = await userApi.signin(nickname, password);
-        console.log(token)
-        //fazer com que coloque o token no sessions ou context api 
+        await signIn(nickname, password)
     }
 
     return (
@@ -26,5 +28,25 @@ const Signin = () => {
 
     )
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const { ['nextauth.token']: token } = parseCookies(ctx);
+
+
+    if(token) {
+        return {
+            redirect: {
+                destination: '/home',
+                permanent: false
+            }
+        }
+    }
+
+    
+    return {
+        props: {}
+    }
+}
+
 
 export default Signin;

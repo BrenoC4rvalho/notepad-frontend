@@ -1,7 +1,10 @@
 import { useState } from "react"
-import BigBtn from "../BigBtn"
 
-const NoteForm = () => {
+type Props = {
+    onClick: (title: string, note: string) => void
+}
+
+const NoteForm = (props: Props) => {
 
     const [title, setTitle] = useState('');
     const [note, setNote] = useState('');
@@ -21,7 +24,12 @@ const NoteForm = () => {
                 onChange={(e) => setNote(e.target.value)}
             />
             <div>
-                <BigBtn text="Submit"/>
+                <button 
+                    className="p-3 rounded mt-7 mb-4 text-2xl bg-cyan-500 text-white"
+                    onClick={() => props.onClick(title, note)}
+                >
+                    Submit
+                </button>
             </div>
 
         </div>

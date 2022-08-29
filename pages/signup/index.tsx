@@ -1,13 +1,16 @@
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
+import { useContext } from "react";
 import Form from "../../components/Form";
-import userApi from "../../libs/userApi";
+import { AuthContext } from "../../contexts/AuthContext";
+import userApi from "../../services/userApi";
 
 const Signup = () => {
-    
+    const { signIn } = useContext(AuthContext)
+
     const register = async (nickname: string, password: string) => {
-        const token = await userApi.signup(nickname, password);
-        console.log(token)
-      
-        //fazer a parte de colocar o token em algum lugar 
+        await userApi.signup(nickname, password);
+        await signIn(nickname, password)
     }
 
     return (
@@ -24,5 +27,25 @@ const Signup = () => {
         </div>
     )
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    const { ['nextauth.token']: token } = parseCookies(ctx);
+
+
+    if(token) {
+        return {
+            redirect: {
+                destination: '/home',
+                permanent: false
+            }
+        }
+    }
+
+    
+    return {
+        props: {}
+    }
+}
+
 
 export default Signup;

@@ -8,18 +8,17 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { getAPICLient } from "../../services/api";
 import noteApi from "../../services/noteApi";
 
-const add = () => {
+const edit = () => {
     const router = useRouter()
+    const { id } = router.query;
     const { user } = useContext(AuthContext)
 
-
-    const addNote = async (title: string, note: string) => {
+    const editNote = async (title: string, note: string) => {
         const instance = getAPICLient(); 
         if(user) {
-            await noteApi.create(instance, user.nickname, title, note, user.id)
+            await noteApi.update(instance, user.nickname, title, note, parseInt(id as string))
             router.push('/home');
         }
-
     }
 
     return (
@@ -27,8 +26,7 @@ const add = () => {
             <Header islogged={true} isPageAdd={true} />
 
             <main className="mx-20">
-                <h2 className="text-4xl mb-7 font-bold text-cyan-500">Add new note</h2>
-                <NoteForm  onClick={addNote} />
+                <NoteForm onClick={editNote} />
             </main>
 
             <footer className="text-center mb-4">
@@ -37,6 +35,7 @@ const add = () => {
         </div>
     )
 }
+
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const { ['nextauth.token']: token } = parseCookies(ctx);
@@ -57,5 +56,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
 }
 
-
-export default add;
+export default edit

@@ -1,6 +1,8 @@
 import Logo from '../Logo';
 import LinkBtn from '../LinkBtn';
-import Btn from '../Btn';
+
+import { destroyCookie } from 'nookies'
+import { useRouter } from 'next/router';
 
 type Props = {
     islogged: boolean
@@ -8,6 +10,14 @@ type Props = {
 }
 
 const Header = ( props: Props) => {
+
+    const router = useRouter();
+
+    const logout = () => {
+        destroyCookie(undefined, 'nextauth.token')
+        router.push('/');
+    }
+
     return (
         <header className='flex justify-between items-center py-5 px-20 '>
             
@@ -30,7 +40,12 @@ const Header = ( props: Props) => {
                     {props.isPageAdd &&
                         <LinkBtn text='Home'link='/home' background={true} />
                     }
-                    <Btn text='Log out' />
+                    <button 
+                        className='p-2 mx-2 text-base rounded border-cyan-500 border-2 text-cyan-500'
+                        onClick={logout}
+                    >
+                        Log out
+                    </button>
                 </div>
             }
 

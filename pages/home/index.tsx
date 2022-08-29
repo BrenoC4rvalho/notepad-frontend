@@ -1,34 +1,39 @@
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 import { parseCookies } from "nookies";
-import { useContext } from "react";
-import Header from "../../components/Header";
-import NoteForm from "../../components/NoteForm";
+import { useContext, useEffect, useState } from "react";
+
 import { AuthContext } from "../../contexts/AuthContext";
 import { getAPICLient } from "../../services/api";
 import noteApi from "../../services/noteApi";
 
-const add = () => {
-    const router = useRouter()
+import NoteType from "../../types/Note";
+
+import Header from "../../components/Header";
+import NoteList from "../../components/NoteList";
+
+
+
+const home = () => {
+    const [noteList, setNoteList] = useState<NoteType[]>([]) 
     const { user } = useContext(AuthContext)
 
+    useEffect(() => {
+        loadNoteList()
+    }, [])
 
-    const addNote = async (title: string, note: string) => {
+    const loadNoteList = async () => {
         const instance = getAPICLient(); 
         if(user) {
-            await noteApi.create(instance, user.nickname, title, note, user.id)
-            router.push('/home');
+            const response: NoteType[] = await noteApi.getAll(instance, user.nickname)
+            setNoteList(response);
         }
-
     }
 
     return (
         <div className="flex flex-col justify-between min-h-screen">
-            <Header islogged={true} isPageAdd={true} />
-
-            <main className="mx-20">
-                <h2 className="text-4xl mb-7 font-bold text-cyan-500">Add new note</h2>
-                <NoteForm  onClick={addNote} />
+            <Header islogged={true} isPageAdd={false} />
+            <main className="flex justify-center">
+                <NoteList list={noteList} />
             </main>
 
             <footer className="text-center mb-4">
@@ -57,5 +62,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
 }
 
-
-export default add;
+export default home;

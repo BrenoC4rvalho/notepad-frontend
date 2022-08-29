@@ -1,9 +1,11 @@
+import { GetServerSideProps } from "next";
+import { parseCookies } from "nookies";
 import Header from "../components/Header"
 
 const Home = () => {
   return (
     <div className="flex flex-col justify-between min-h-screen">
-      <Header islogged={false} />
+      <Header isPageAdd={false} islogged={false} />
 
       <main className="flex justify-center ">
           
@@ -24,5 +26,25 @@ const Home = () => {
     </div>
   )
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { ['nextauth.token']: token } = parseCookies(ctx);
+
+
+  if(token) {
+      return {
+          redirect: {
+              destination: '/home',
+              permanent: false
+          }
+      }
+  }
+
+  
+  return {
+      props: {}
+  }
+}
+
 
 export default Home
